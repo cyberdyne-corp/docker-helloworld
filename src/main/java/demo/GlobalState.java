@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class GlobalState {
 
-    private boolean state = false;
+    private boolean state = true;
 
     public boolean getState() {
         return state;
