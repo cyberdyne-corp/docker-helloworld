@@ -3,5 +3,6 @@ management:
   port: 8081
 
 endpoints:
+  enabled: true
   autoconfig:
     sensitive: false
