@@ -90,7 +90,7 @@ $ docker build -t helloworld .
 In order to simply run the application, use the following command:
 
 ```
-$ docker run --rm -d -P \
+$ docker run -d -P \
     -e "SERVICE_NAME=my_service" \
     -e "SERVICE_TAGS=my_tag" \
     -e "SERVICE_8081_IGNORE=1" \
@@ -107,7 +107,7 @@ The monitoring port of the application (8081) will not be mapped as a Consul ser
 To run the application and add a Consul health check, use the following command:
 
 ```
-$ docker run --rm -d -P \
+$ docker run -d -P \
     -e "SERVICE_NAME=my_service" \
     -e "SERVICE_TAGS=my_tag" \
     -e "SERVICE_8081_IGNORE=1" \
