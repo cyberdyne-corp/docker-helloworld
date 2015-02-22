@@ -42,17 +42,30 @@ $ docker run -d \
 
 Using the management port (8081), we can retrieve the "STATUS" element, and check it is "UP"
 
+The shell command used to return a 0/1 status code based on the JSON returned object is:
+
+```
+http --body http://localhost:8081/health \
+    | jq --raw-output ".status" \
+    | grep --quiet UP
+```
+
+Shorten version:
+
+```
+http -b :8081/health | jq -r ".status" | grep -q UP
+```
+
+In Docker, this will give:
+
 ```
 $ docker run -d \
     -e "SERVICE_NAME=my_service" \
     -e "SERVICE_TAGS=my_tag" \
     -e "SERVICE_8081_IGNORE=1" \
-    -e "SERVICE_8080_CHECK_CMD=http :8081/health -b | /usr/bin/jq '.status' | grep UP" \
+    -e "SERVICE_8080_CHECK_CMD=http -b :8081/health | jq -r '.status' | grep -q UP" \
     -P helloworld
 ```
-
-nb: `http :8081`  is a shortcut for `http http://localhost:8081`
-
 
 But ... it currently fails.
 
