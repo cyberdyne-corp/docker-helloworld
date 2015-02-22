@@ -1,17 +1,29 @@
 # docker-helloworld
 
-## Objectives:
-
 Dynamic scaling of an app, based on the app health check status.
 
-The app exposes:
-* port 8080: applicative layer that can be load-balanced
-* port 8081: management port that give the health indicators for this specific instance of the app
+## Stack
 
-To fake a failure on this instance, call `GET /off` on the 8080 port ; this will change the health indicator exposed on the 8081 port.
-To restore the instance, call `GET /on` on the 8080 port
+TODO : docker / consul / ...
 
-## Build the app using the maven docker image
+## Dummy app for testing
+
+The dummy app exposes:
+* APP_PORT (runs localy on 8080): applicative layer that can be load-balanced
+* MANAGEMENT_PORT (runs localy on 8081): management port that give the health indicators for this specific instance of the app
+
+A REST access has been exposed to fake the internal health status of the application.
+
+### Build and start the app locally
+
+```
+$ mvn clean install
+$ java -jar target/demo-${VERSION}.jar
+```
+
+### Build and start the app using the maven docker image
+
+If you don't have maven installed on your system, use the offical maven docker image:
 
 ```
 $ docker run -it --rm --name mvn-app \
@@ -20,75 +32,88 @@ $ docker run -it --rm --name mvn-app \
     mvn clean install
 ```
 
-## Build the app docker image
+### Check the state of the application
 
 ```
-$ docker build -t helloworld .
+$ http http://localhost:APP_PORT/state
 ```
 
-## Start the container
-
-How to register a container into consul and skip a specific port (8081):
+You can also access the application state by using the monitoring port:
 
 ```
-$ docker run -d \
-    -e "SERVICE_NAME=my_service" \
-    -e "SERVICE_TAGS=my_tag" \
-    -e "SERVICE_8081_IGNORE=1" \
-    -P helloworld
+$ http http://localhost:MONITORING_PORT/state
 ```
 
-## With health-check
-
-Using the management port (8081), we can retrieve the "STATUS" element, and check it is "UP"
+Using the management port (under its endpoint `/health`), we can retrieve the "STATUS" element, and check it is "UP"
 
 The shell command used to return a 0/1 status code based on the JSON returned object is:
 
 ```
-http --body http://localhost:8081/health \
+http --body http://localhost:MONITORING_PORT/health \
     | jq --exit-code 'contains( { status: "UP" } )'
 ```
 
 Shorten version:
 
 ```
-http -b :8081/health | jq -e 'contains({status:"UP"})'
+http -b :MONITORING_PORT/health | jq -e 'contains({status:"UP"})'
 ```
 
-In Docker, this will give:
+### Simulate an application failure
+
+Put the application state to DOWN:
 
 ```
-$ docker run -d \
+$ http :APP_PORT/off
+```
+
+### Simulate an application respawn
+
+Put the application state to UP:
+
+```
+$ http :APP_PORT/on
+```
+
+## Automation
+
+Build and run the CRN stack (Consul-Registrator-Nginx), see: https://github.com/deviantony/docker-bg
+
+### Build the docker image to host the application
+
+```
+$ docker build -t helloworld .
+```
+
+### Run the application
+
+In order to simply run the application, use the following command:
+
+```
+$ docker run --rm -d -P \
     -e "SERVICE_NAME=my_service" \
     -e "SERVICE_TAGS=my_tag" \
     -e "SERVICE_8081_IGNORE=1" \
-    -e "SERVICE_8080_CHECK_CMD=http -b :8081/health | jq -e 'contains({status:\"UP\"})'"
-    -P helloworld
+    helloworld \
+    java -jar /tmp/demo.jar
 ```
 
-But ... it currently fails.
+This will map the application port 8080 with a Consul service called my_service. 
 
-The Consul UI returns the following error:
+The monitoring port of the application (8081) will not be mapped as a Consul service. To determine the monitoring port, use the `docker inspect` command on the container.
 
-```
-Get http:///var/run/docker.sock/v1.17/images/6ae78eef3208/json: dial unix /var/run/docker.sock: no such file or directory. Are you trying to connect to a TLS-enabled daemon without TLS?Get http:///var/run/docker.sock/v1.17/images/6ae78eef3208/json: dial unix /var/run/docker.sock: no such file or directory. Are you trying to connect to a TLS-enabled daemon without TLS?time="2015-02-22T09:58:39Z" level="fatal" msg="Post http:///var/run/docker.sock/v1.17/containers/create: dial unix /var/run/docker.sock: no such file or directory. Are you trying to connect to a TLS-enabled daemon without TLS?" 
-```
+### Consul health check
 
-### Tests to make the health check working
-
-This is KO too:
+To run the application and add a Consul health check, use the following command:
 
 ```
-$ docker run -d \
+$ docker run --rm -d -P \
     -e "SERVICE_NAME=my_service" \
     -e "SERVICE_TAGS=my_tag" \
     -e "SERVICE_8081_IGNORE=1" \
-    -e "SERVICE_8080_CHECK_CMD=/bin/true" \
-    -e "SERVICE_8080_CHECK_INTERVAL=15s" \
-    -P helloworld
+    -e "SERVICE_8080_CHECK_CMD=/tmp/health-check.sh" \
+    -e "SERVICE_8080_CHECK_INTERVAL=5s" \
+    helloworld \
+    java -jar /tmp/demo.jar
 ```
-
-### Leads
-
-http://sheerun.net/2014/05/17/remote-access-to-docker-with-tls/
 
