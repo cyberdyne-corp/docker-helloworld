@@ -1,6 +1,6 @@
 # docker-helloworld
 
-Objectives:
+## Objectives:
 
 Dynamic scaling of an app, based on the app health check status.
 
@@ -11,7 +11,13 @@ The app exposes:
 To fake a failure on this instance, call `GET /off` on the 8080 port ; this will change the health indicator exposed on the 8081 port.
 To restore the instance, call `GET /on` on the 8080 port
 
-## Build the app image
+## Build the app using the maven docker image
+
+```
+$ docker run -it --rm --name mvn-app -v "$PWD":/usr/src/app -w /usr/src/app maven:3.2-jdk-7 mvn clean install
+```
+
+## Build the app docker image
 
 ```
 $ docker build -t helloworld .
