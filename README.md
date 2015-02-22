@@ -52,7 +52,7 @@ http --body http://localhost:8081/health \
 Shorten version:
 
 ```
-http -b :8081/health | jq -r -e 'contains({status:"UP"})'
+http -b :8081/health | jq -e 'contains({status:"UP"})'
 ```
 
 In Docker, this will give:
