@@ -1,6 +1,12 @@
 # docker-helloworld
 
-## Build the app image
+## Build the app using the maven docker image
+
+```
+$ docker run -it --rm --name mvn-app -v "$PWD":/usr/src/app -w /usr/src/app maven:3.2-jdk-7 mvn clean install
+```
+
+## Build the app docker image
 
 ```
 $ docker build -t helloworld .
