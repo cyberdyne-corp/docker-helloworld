@@ -14,7 +14,10 @@ To restore the instance, call `GET /on` on the 8080 port
 ## Build the app using the maven docker image
 
 ```
-$ docker run -it --rm --name mvn-app -v "$PWD":/usr/src/app -w /usr/src/app maven:3.2-jdk-7 mvn clean install
+$ docker run -it --rm --name mvn-app \
+    -v "$PWD":/usr/src/app \
+    -w /usr/src/app maven:3.2-jdk-7 \
+    mvn clean install
 ```
 
 ## Build the app docker image
@@ -28,7 +31,11 @@ $ docker build -t helloworld .
 How to register a container into consul and skip a specific port (8081):
 
 ```
-$ docker run -d -e "SERVICE_NAME=my_service" -e "SERVICE_TAGS=my_tag" -e "SERVICE_8081_IGNORE=1" -P helloworld
+$ docker run -d \
+    -e "SERVICE_NAME=my_service" \
+    -e "SERVICE_TAGS=my_tag" \
+    -e "SERVICE_8081_IGNORE=1" \
+    -P helloworld
 ```
 
 ## With health-check
@@ -36,7 +43,12 @@ $ docker run -d -e "SERVICE_NAME=my_service" -e "SERVICE_TAGS=my_tag" -e "SERVIC
 Using the management port (8081), we can retrieve the "STATUS" element, and check it is "UP"
 
 ```
-$ docker run -d -e "SERVICE_NAME=my_service" -e "SERVICE_TAGS=my_tag" -e "SERVICE_8081_IGNORE=1" -e "SERVICE_8080_CHECK_CMD=http http://localhost:8081/health -b | /usr/bin/jq '.status' | grep UP" -P helloworld
+$ docker run -d \
+    -e "SERVICE_NAME=my_service" \
+    -e "SERVICE_TAGS=my_tag" \
+    -e "SERVICE_8081_IGNORE=1" \
+    -e "SERVICE_8080_CHECK_CMD=http http://localhost:8081/health -b | /usr/bin/jq '.status' | grep UP" \
+    -P helloworld
 ```
 
 But ... it currently fails.
@@ -52,7 +64,13 @@ Get http:///var/run/docker.sock/v1.17/images/6ae78eef3208/json: dial unix /var/r
 This is KO too:
 
 ```
-$ docker run -d -e "SERVICE_NAME=my_service" -e "SERVICE_TAGS=my_tag" -e "SERVICE_8081_IGNORE=1" -e "SERVICE_8080_CHECK_CMD=/bin/true" -e "SERVICE_8080_CHECK_INTERVAL=15s" -P helloworld
+$ docker run -d \
+    -e "SERVICE_NAME=my_service" \
+    -e "SERVICE_TAGS=my_tag" \
+    -e "SERVICE_8081_IGNORE=1" \
+    -e "SERVICE_8080_CHECK_CMD=/bin/true" \
+    -e "SERVICE_8080_CHECK_INTERVAL=15s" \
+    -P helloworld
 ```
 
 ### Leads
