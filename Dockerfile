@@ -8,7 +8,6 @@ RUN chmod +x /usr/bin/jq
 
 ADD target/demo-0.0.1-SNAPSHOT.jar /tmp/demo.jar
 
+ADD scripts/health-check.sh /tmp/health-check.sh
+
 EXPOSE 8080 8081
-
-ENTRYPOINT ["java", "-jar", "/tmp/demo.jar"]
-
