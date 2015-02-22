@@ -46,14 +46,13 @@ The shell command used to return a 0/1 status code based on the JSON returned ob
 
 ```
 http --body http://localhost:8081/health \
-    | jq --raw-output ".status" \
-    | grep --quiet UP
+    | jq --raw-output --exit-code 'contains( { status: "UP" } )'
 ```
 
 Shorten version:
 
 ```
-http -b :8081/health | jq -r ".status" | grep -q UP
+http -b :8081/health | jq -r -e 'contains({status:"UP"})'
 ```
 
 In Docker, this will give:
@@ -63,7 +62,7 @@ $ docker run -d \
     -e "SERVICE_NAME=my_service" \
     -e "SERVICE_TAGS=my_tag" \
     -e "SERVICE_8081_IGNORE=1" \
-    -e "SERVICE_8080_CHECK_CMD=http -b :8081/health | jq -r '.status' | grep -q UP" \
+    -e "SERVICE_8080_CHECK_CMD=http -b :8081/health | jq -r -e 'contains({status:\"UP\"})'"
     -P helloworld
 ```
 
