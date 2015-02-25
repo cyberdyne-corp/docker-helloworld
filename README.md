@@ -77,7 +77,7 @@ $ http :APP_PORT/on
 
 ## Automation
 
-Build and run the CRN stack (Consul-Registrator-Nginx), see: https://github.com/deviantony/docker-bg
+Build and run the CRN stack (Consul-Registrator-Nginx), see: https://github.com/deviantony/docker-CRN
 
 ### Build the docker image to host the application
 
