@@ -21,9 +21,9 @@ $ mvn clean install
 $ java -jar target/demo-${VERSION}.jar
 ```
 
-### Build and start the app using the maven docker image
+### Build the app using the maven docker image
 
-If you don't have maven installed on your system, use the offical maven docker image:
+If you don't have maven installed on your system, use the official maven docker image:
 
 ```
 $ docker run -it --rm --name mvn-app \
