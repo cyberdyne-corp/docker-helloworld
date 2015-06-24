@@ -2,10 +2,6 @@
 
 Dynamic scaling of an app, based on the app health check status.
 
-## Stack
-
-TODO : docker / consul / ...
-
 ## Dummy app for testing
 
 The dummy app exposes:
@@ -75,45 +71,58 @@ Put the application state to UP:
 $ http :APP_PORT/on
 ```
 
-## Automation
 
-Build and run the CRN stack (Consul-Registrator-Nginx), see: https://github.com/deviantony/docker-CRN
+## Make the application un-responsive
 
-### Build the docker image to host the application
+To simulate slow queries, use the `/sleep` endpoint:
 
-```
-$ docker build -t helloworld .
-```
 
-### Run the application
-
-In order to simply run the application, use the following command:
+To get the help for this endpoint, perform:
 
 ```
-$ docker run -d -P \
-    -e "SERVICE_NAME=my_service" \
-    -e "SERVICE_TAGS=my_tag" \
-    -e "SERVICE_8081_IGNORE=1" \
-    helloworld \
-    java -jar /tmp/demo.jar
+$ http :APP_PORT/sleep
 ```
 
-This will map the application port 8080 with a Consul service called my_service. 
+To make the request sleepy during a fix duration, perform
 
-The monitoring port of the application (8081) will not be mapped as a Consul service. To determine the monitoring port, use the `docker inspect` command on the container.
-
-### Consul health check
-
-To run the application and add a Consul health check, use the following command:
 
 ```
-$ docker run -d -P \
-    -e "SERVICE_NAME=my_service" \
-    -e "SERVICE_TAGS=my_tag" \
-    -e "SERVICE_8081_IGNORE=1" \
-    -e "SERVICE_8080_CHECK_CMD=/tmp/health-check.sh" \
-    -e "SERVICE_8080_CHECK_INTERVAL=15s" \
-    helloworld \
-    java -jar /tmp/demo.jar
+$ http :APP_PORT/sleep?duration=5
 ```
+
+Default time unit is SECONDS.
+To change the time unit, use
+
+
+```
+$ http :APP_PORT/sleep?duration=5&unit=MINUTES
+```
+
+
+To wait for a random amount of time, within an acceptable range, use
+
+
+```
+$ http :APP_PORT/sleep?max=50
+```
+
+This will wait for a random amount of seconds, between 1 and 50.
+
+To change the lower bound, use:
+
+
+```
+$ http :APP_PORT/sleep?min=4max=15
+```
+
+This will wait for a random amount of time, between 4 and 15 seconds.
+
+To change the time unit, use
+
+
+```
+$ http :APP_PORT/sleep?min=4max=15&unit=MINUTES
+```
+
+This will wait for a random amount of time, between 4 and 15 minutes.
 
