@@ -112,7 +112,7 @@ To change the lower bound, use:
 
 
 ```
-$ http :APP_PORT/sleep?min=4max=15
+$ http :APP_PORT/sleep?min=4&max=15
 ```
 
 This will wait for a random amount of time, between 4 and 15 seconds.
@@ -121,7 +121,7 @@ To change the time unit, use
 
 
 ```
-$ http :APP_PORT/sleep?min=4max=15&unit=MINUTES
+$ http :APP_PORT/sleep?min=4&max=15&unit=MINUTES
 ```
 
 This will wait for a random amount of time, between 4 and 15 minutes.
