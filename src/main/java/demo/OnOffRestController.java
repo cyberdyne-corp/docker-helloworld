@@ -19,29 +19,53 @@ public class OnOffRestController {
         return globalState.getState();
     }
 
+    @RequestMapping(value = "/sleep", params = "max")
+    public void sleepRandom(
+            @RequestParam(value = "min", defaultValue = "1") final int minDuration,
+            @RequestParam(value = "max", defaultValue = "45") final int maxDuration,
+            @RequestParam(value = "unit", defaultValue = "SECONDS") final TimeUnit unit) {
+
+        final int duration = minDuration + (int)(Math.random() * ((maxDuration - minDuration) + 1));
+
+        doWait(unit, duration);
+    }
+
     @RequestMapping("/sleep")
     public void sleep(@RequestParam(value = "duration") final int duration,
                       @RequestParam(value = "unit", defaultValue = "SECONDS") final TimeUnit unit) {
+        doWait(unit, duration);
+    }
+
+    private void doWait(TimeUnit unit, int duration) {
+        System.out.println("Wainting " + duration + " " + unit);
         try {
             Thread.sleep(unit.toMillis(duration));
         } catch (InterruptedException e) {
         }
     }
 
-    @RequestMapping(value = "/sleep", params = "!duration")
+    @RequestMapping(value = "/sleep", params = {"!duration", "!max"})
     public String sleep() {
+
         final StringBuffer units = new StringBuffer();
         for (final TimeUnit unit : TimeUnit.values()) {
-            units.append("\n - ").append(unit.name());
+            units.append("<br/>\n - ").append(unit.name());
         }
 
-        return "Usage: /sleep?duration=3&unit=SECONDS\n"
-                + "\n"
-                + "where unit can be one of:"
+        return "Usage 1: fixed-length wait<br/>\n"
+                + "/sleep?duration=3&unit=SECONDS<br/>\n"
+                + "<br/>\n"
+                + "<br/>\n"
+                + "Usage 2: random wait between an interval<br/>\n"
+                + "/sleep?min=3&max=60&unit=SECONDS<br/>\n"
+                + "<br/>\n"
+                + "<br/>\n"
+                + "where unit can be one of:<br/>"
                 + units.toString()
-                + "\n"
-                + "\n"
-                + "When unit is not specified, SECONDS is used";
+                + "<br/>\n"
+                + "<br/>\n"
+                + "When unit is not specified, SECONDS is used<br/>";
+
     }
 
     @RequestMapping("/on")
