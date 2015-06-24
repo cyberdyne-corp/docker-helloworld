@@ -37,7 +37,7 @@ public class OnOffRestController {
     }
 
     private void doWait(TimeUnit unit, int duration) {
-        System.out.println("Wainting " + duration + " " + unit);
+        System.out.println("Waiting " + duration + " " + unit);
         try {
             Thread.sleep(unit.toMillis(duration));
         } catch (InterruptedException e) {
