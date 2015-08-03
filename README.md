@@ -1,8 +1,8 @@
-# docker-helloworld
+# skynet-backend
 
 Dynamic scaling of an app, based on the app health check status.
 
-## Dummy app for testing
+## Dummy app used to test the Skynet stack
 
 The dummy app exposes:
 * APP_PORT (runs localy on 8080): applicative layer that can be load-balanced
@@ -125,4 +125,3 @@ $ http :APP_PORT/sleep?min=4&max=15&unit=MINUTES
 ```
 
 This will wait for a random amount of time, between 4 and 15 minutes.
-
