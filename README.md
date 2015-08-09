@@ -37,7 +37,7 @@ $ http http://localhost:APP_PORT/state
 You can also access the application state by using the monitoring port:
 
 ```
-$ http http://localhost:MONITORING_PORT/state
+$ http http://localhost:MONITORING_PORT/health
 ```
 
 Using the management port (under its endpoint `/health`), we can retrieve the "STATUS" element, and check it is "UP"
